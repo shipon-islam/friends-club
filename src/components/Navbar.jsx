@@ -91,6 +91,18 @@ export default function Navbar() {
             >
               profile
             </NavLink>}
+           {currentUser&& <NavLink
+              className={link_btn}
+              to="/chat"
+              style={({ isActive }) => ({
+                color: isActive ? "#ef4444" : "",
+                borderBottomColor: isActive ? "#ef4444" : "",
+              })}
+              end
+              onClick={() => setToggle((prev) => !prev)}
+            >
+              chats
+            </NavLink>}
             {currentUser ? (
               <button
                 onClick={handleLogout}

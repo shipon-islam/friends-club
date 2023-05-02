@@ -15,8 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const AuthContext = React.createContext();
-const avatar =
-  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+
 
 export function useAuth() {
   return useContext(AuthContext);
@@ -41,8 +40,7 @@ export function AuthProvider({ children }) {
     await createUserWithEmailAndPassword(auth, email, password);
     // update profile
     await updateProfile(auth.currentUser, {
-      displayName: firstname + " " + lastname,
-      photoURL:avatar,
+      displayName: (firstname + " " + lastname).toLowerCase(),
     });
 
     const user = auth.currentUser;
@@ -60,6 +58,7 @@ export function AuthProvider({ children }) {
       const { uid, photoURL, displayName } = await createProfileUser(data);
       //create user on firestore
       await setDoc(doc(db, "users", uid), {
+        uid,
         firstname,
         lastname,
         email,
@@ -68,8 +67,10 @@ export function AuthProvider({ children }) {
         dob,
         username: displayName,
         avatar: photoURL,
+        cover:"",
         createAt: Timestamp.now(),
       });
+      await setDoc(doc(db, "userChats", uid), {});
       setIsSignup(false);
       toast.success("Register successful", { autoClose: 1000 });
       navigate("/profile");
@@ -86,6 +87,7 @@ export function AuthProvider({ children }) {
     
     const {uid,displayName,email,photoURL} = auth.currentUser;
     await setDoc(doc(db, "users", uid), {
+      uid,
       firstname:"",
       lastname:"",
       email,
@@ -96,6 +98,7 @@ export function AuthProvider({ children }) {
       avatar: photoURL,
       createAt: Timestamp.now(),
     });
+    await setDoc(doc(db, "userChats", uid), {});
     navigate("/profile");
   };
 
